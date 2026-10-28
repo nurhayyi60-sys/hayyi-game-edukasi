@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔐 Math Escape Room - Petualangan Matematika</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    color: #fff;
+    overflow-x: hidden;
+  }
+
+  /* Animated background particles */
+  .particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .particle {
+    position: absolute;
+    width: 3px; height: 3px;
+    background: rgba(255, 215, 0, 0.6);
+    border-radius: 50%;
+    animation: float 15s infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 25px;
+    animation: fadeInDown 0.8s;
+  }
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .header h1 {
+    font-size: 2.8em;
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+    margin-bottom: 10px;
+  }
+  .header p {
+    font-size: 1.1em;
+    color: #b0b0b0;
+  }
+
+  /* Stats bar */
+  .stats {
+    display: flex;
+    justify-content: space-around;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    backdrop-filter: blur(10px);
+  }
+  .stat-item {
+    text-align: center;
+  }
+  .stat-item h3 {
+    font-size: 0.9em;
+    color: #FFD700;
+    margin-bottom: 5px;
+  }
+  .stat-item .value {
+    font-size: 1.8em;
+    font-weight: bold;
+  }
+  .lives { color: #ff4757; }
+  .score { color: #2ed573; }
+  .room { color: #70a1ff; }
+
+  /* Room container */
+  .room-container {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 20px;
+    padding: 30px;
+    border: 3px solid rgba(255, 215, 0, 0.4);
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.2);
+    animation: fadeIn 0.6s;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .room-header {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+  .room-title {
+    font-size: 2em;
+    color: #FFD700;
+    margin-bottom: 10px;
+  }
+  .room-description {
+    font-size: 1.1em;
+    color: #d0d0d0;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* Door visual */
+  .door {
+    width: 200px;
+    height: 280px;
+    margin: 30px auto;
+    background: linear-gradient(135deg, #8B4513 0%, #654321 100%);
+    border: 8px solid #3e2723;
+    border-radius: 10px 10px 0 0;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: all 0.5s;
+  }
+  .door.open {
+    transform: perspective(800px) rotateY(-80deg);
+    opacity: 0.3;
+  }
+  .door-handle {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    width: 25px;
+    height: 25px;
+    background: radial-gradient(circle, #FFD700, #FFA500);
+    border-radius: 50%;
+    border: 3px solid #3e2723;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+  }
+  .door-keyhole {
+    position: absolute;
+    right: 23px;
+    top: 60%;
+    width: 15px;
+    height: 30px;
+    background: #000;
+    border-radius: 50% 50% 0 0;
+  }
+  .door-number {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 3em;
+    font-weight: bold;
+    color: #FFD700;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+  }
+
+  /* Question */
+  .question-box {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 25px;
+    border-radius: 15px;
+    margin: 25px 0;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+  }
+  .question-label {
+    font-size: 1.2em;
+    color: #FFD700;
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+  .question-text {
+    font-size: 1.5em;
+    color: #fff;
+    margin: 15px 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    border-left: 4px solid #FFD700;
+  }
+
+  /* Answer input */
+  .answer-section {
+    text-align: center;
+    margin: 25px 0;
+  }
+  .answer-label {
+    font-size: 1.3em;
+    color: #FFD700;
+    margin-bottom: 15px;
+  }
+  .answer-input {
+    font-size: 1.5em;
+    padding: 12px 20px;
+    width: 200px;
+    border: 3px solid #FFD700;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    text-align: center;
+    font-weight: bold;
+    margin: 0 10px;
+  }
+  .answer-input:focus {
+    outline: none;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 12px 30px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    margin: 5px;
+  }
+  .btn-primary {
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    color: #000;
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 20px rgba(255, 215, 0, 0.6);
+  }
+  .btn-hint {
+    background: rgba(112, 161, 255, 0.3);
+    color: #70a1ff;
+    border: 2px solid #70a1ff;
+  }
+  .btn-hint:hover {
+    background: rgba(112, 161, 255, 0.5);
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Feedback */
+  .feedback {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    font-size: 1.1em;
+    line-height: 1.6;
+    animation: slideIn 0.5s;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .feedback.correct {
+    background: rgba(46, 213, 115, 0.2);
+    border: 2px solid #2ed573;
+    color: #2ed573;
+  }
+  .feedback.wrong {
+    background: rgba(255, 71, 87, 0.2);
+    border: 2px solid #ff4757;
+    color: #ff4757;
+  }
+  .feedback.hint {
+    background: rgba(112, 161, 255, 0.2);
+    border: 2px solid #70a1ff;
+    color: #70a1ff;
+  }
+  .feedback-title {
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  .solution {
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    text-align: left;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal.show { display: flex; }
+  .modal-content {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 500px;
+    border: 3px solid #FFD700;
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+    animation: popIn 0.5s;
+  }
+  @keyframes popIn {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+  }
+  .modal-emoji {
+    font-size: 5em;
+    margin: 20px 0;
+  }
+  .modal-title {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+  }
+  .modal-title.win { color: #2ed573; }
+  .modal-title.lose { color: #ff4757; }
+  .modal-text {
+    font-size: 1.2em;
+    margin: 20px 0;
+    line-height: 1.6;
+  }
+
+  /* Start screen */
+  .start-screen {
+    text-align: center;
+    padding: 50px 20px;
+  }
+  .start-screen h2 {
+    font-size: 2.5em;
+    color: #FFD700;
+    margin-bottom: 20px;
+  }
+  .start-screen p {
+    font-size: 1.2em;
+    margin: 15px 0;
+    line-height: 1.6;
+  }
+  .rules {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 15px;
+    margin: 30px 0;
+    text-align: left;
+  }
+  .rules h3 {
+    color: #FFD700;
+    margin-bottom: 15px;
+  }
+  .rules ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .rules li {
+    padding: 8px 0;
+    padding-left: 30px;
+    position: relative;
+  }
+  .rules li:before {
+    content: "🔑";
+    position: absolute;
+    left: 0;
+  }
+
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<div class="container">
+  <div class="header">
+    <h1>🔐 MATH ESCAPE ROOM</h1>
+    <p>Petualangan Matematika Misterius</p>
+  </div>
+
+  <!-- Start Screen -->
+  <div id="startScreen" class="start-screen">
+    <h2>Selamat Datang, Penjelajah!</h2>
+    <p>Kamu terjebak di dalam kastil matematika misterius...</p>
+    <p>Selesaikan teka-teki di setiap ruangan untuk menemukan jalan keluar!</p>
+    
+    <div class="rules">
+      <h3>📜 Aturan Permainan:</h3>
+      <ul>
+        <li>Kamu memiliki <b>3 nyawa</b> - hati-hati!</li>
+        <li>Setiap jawaban benar = <b>+100 poin</b></li>
+        <li>Gunakan <b>petunjuk</b> jika kesulitan (tidak mengurangi skor)</li>
+        <li>4 ruangan dengan tingkat kesulitan meningkat</li>
+        <li>Selesaikan semua ruangan untuk <b>BEBAS</b>!</li>
+      </ul>
+    </div>
+
+    <button class="btn btn-primary" onclick="startGame()" style="font-size: 1.3em; padding: 15px 40px;">
+      🚪 MULAI PETUALANGAN
+    </button>
+  </div>
+
+  <!-- Game Screen -->
+  <div id="gameScreen" class="hidden">
+    <div class="stats">
+      <div class="stat-item">
+        <h3>❤️ NYAWA</h3>
+        <div class="value lives" id="lives">3</div>
+      </div>
+      <div class="stat-item">
+        <h3>⭐ SKOR</h3>
+        <div class="value score" id="score">0</div>
+      </div>
+      <div class="stat-item">
+        <h3>🏰 RUANGAN</h3>
+        <div class="value room" id="currentRoom">1/4</div>
+      </div>
+    </div>
+
+    <div class="room-container" id="roomContainer">
+      <!-- Room content will be loaded here -->
+    </div>
+  </div>
+</div>
+
+<!-- End Game Modal -->
+<div class="modal" id="endModal">
+  <div class="modal-content">
+    <div class="modal-emoji" id="modalEmoji">🏆</div>
+    <h2 class="modal-title" id="modalTitle">SELAMAT!</h2>
+    <p class="modal-text" id="modalText"></p>
+    <button class="btn btn-primary" onclick="restartGame()">🔄 MAIN LAGI</button>
+  </div>
+</div>
+
+<script>
+// Game data
+const rooms = [
+  {
+    id: 1,
+    title: "📚 Ruang Perpustakaan",
+    description: "Kamu memasuki ruangan penuh buku kuno. Sebuah pintu terkunci dengan simbol matematika. Di atas pintu tertulis...",
+    question: "Selesaikan persamaan linear berikut untuk menemukan kode pintu:",
+    equation: "3x + 7 = 22",
+    answer: 5,
+    hint: "Langkah 1: Kurangi 7 dari kedua ruas → 3x = 15\nLangkah 2: Bagi kedua ruas dengan 3 → x = ?",
+    solution: "3x + 7 = 22\n3x = 22 - 7\n3x = 15\nx = 15/3\nx = 5\n\nKode pintu: 5",
+    topic: "Persamaan Linear"
+  },
+  {
+    id: 2,
+    title: "⚗️ Ruang Laboratorium",
+    description: "Laboratorium gelap dengan tabung reaksi bersinar. Sebuah brankas digital membutuhkan solusi pertidaksamaan...",
+    question: "Selesaikan pertidaksamaan linear berikut:",
+    equation: "2x - 5 > 7",
+    answer: "x > 6",
+    hint: "Langkah 1: Tambah 5 ke kedua ruas → 2x > 12\nLangkah 2: Bagi kedua ruas dengan 2 → x > ?",
+    solution: "2x - 5 > 7\n2x > 7 + 5\n2x > 12\nx > 12/2\nx > 6\n\nKode pintu: x > 6",
+    topic: "Pertidaksamaan Linear"
+  },
+  {
+    id: 3,
+    title: "🗝️ Ruang Harta Karun",
+    description: "Ruangan penuh peti emas. Sebuah kotak terkunci dengan sistem persamaan. Pecahkan untuk menemukan kuncinya!",
+    question: "Selesaikan sistem persamaan linear berikut:",
+    equation: "x + y = 10\n2x - y = 5",
+    answer: "x=5,y=5",
+    hint: "Metode eliminasi:\nLangkah 1: Jumlahkan kedua persamaan untuk menghilangkan y\nLangkah 2: Selesaikan untuk x\nLangkah 3: Substitusi x ke persamaan pertama untuk mencari y",
+    solution: "x + y = 10 ... (1)\n2x - y = 5 ... (2)\n\nJumlahkan (1) + (2):\n3x = 15\nx = 5\n\nSubstitusi ke (1):\n5 + y = 10\ny = 5\n\nKode pintu: x = 5, y = 5",
+    topic: "Sistem Persamaan Linear"
+  },
+  {
+    id: 4,
+    title: "🏰 Ruang Final - Pintu Keluar",
+    description: "Pintu keluar sudah terlihat! Tapi ada satu teka-teki terakhir yang paling sulit. Pecahkan untuk kebebasan!",
+    question: "Selesaikan sistem persamaan linear berikut:",
+    equation: "3x + 2y = 16\nx - y = 2",
+    answer: "x=4,y=2",
+    hint: "Metode substitusi:\nLangkah 1: Dari persamaan kedua, nyatakan x = y + 2\nLangkah 2: Substitusi ke persamaan pertama\nLangkah 3: Selesaikan untuk y, lalu cari x",
+    solution: "3x + 2y = 16 ... (1)\nx - y = 2 ... (2)\n\nDari (2): x = y + 2\n\nSubstitusi ke (1):\n3(y + 2) + 2y = 16\n3y + 6 + 2y = 16\n5y = 10\ny = 2\n\nx = y + 2 = 2 + 2 = 4\n\nKode pintu: x = 4, y = 2",
+    topic: "Sistem Persamaan Linear (Lanjutan)"
+  }
+];
+
+let currentRoomIndex = 0;
+let lives = 3;
+let score = 0;
+let hintUsed = false;
+
+// Create particles
+function createParticles() {
+  const particlesContainer = document.getElementById('particles');
+  for (let i = 0; i < 50; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDelay = Math.random() * 15 + 's';
+    particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+    particlesContainer.appendChild(particle);
+  }
+}
+
+function startGame() {
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('gameScreen').classList.remove('hidden');
+  loadRoom();
+}
+
+function loadRoom() {
+  const room = rooms[currentRoomIndex];
+  const container = document.getElementById('roomContainer');
+  
+  container.innerHTML = `
+    <div class="room-header">
+      <h2 class="room-title">${room.title}</h2>
+      <p class="room-description">${room.description}</p>
+    </div>
+
+    <div class="door" id="door">
+      <div class="door-number">${room.id}</div>
+      <div class="door-handle"></div>
+      <div class="door-keyhole"></div>
+    </div>
+
+    <div class="question-box">
+      <div class="question-label">📝 ${room.topic}</div>
+      <p>${room.question}</p>
+      <div class="question-text">${room.equation.replace(/\n/g, '<br>')}</div>
+    </div>
+
+    <div class="answer-section">
+      <div class="answer-label">🔑 Masukkan Kode Pintu:</div>
+      <input type="text" class="answer-input" id="answerInput" placeholder="Jawaban" onkeypress="handleKeyPress(event)">
+      <button class="btn btn-primary" onclick="checkAnswer()">BUKA PINTU</button>
+      <br>
+      <button class="btn btn-hint" onclick="showHint()" id="hintBtn">💡 Petunjuk</button>
+    </div>
+
+    <div id="feedback"></div>
+  `;
+
+  document.getElementById('currentRoom').textContent = `${currentRoomIndex + 1}/${rooms.length}`;
+  document.getElementById('answerInput').focus();
+}
+
+function handleKeyPress(event) {
+  if (event.key === 'Enter') {
+    checkAnswer();
+  }
+}
+
+function checkAnswer() {
+  const input = document.getElementById('answerInput');
+  const userAnswer = input.value.trim().toLowerCase().replace(/\s/g, '');
+  const room = rooms[currentRoomIndex];
+  const correctAnswer = room.answer.toString().toLowerCase().replace(/\s/g, '');
+  
+  let isCorrect = false;
+  
+  // Flexible answer checking
+  if (typeof room.answer === 'number') {
+    isCorrect = parseFloat(userAnswer) === room.answer;
+  } else {
+    // For string answers like "x>6" or "x=5,y=5"
+    isCorrect = userAnswer === correctAnswer || 
+                userAnswer === correctAnswer.replace('=', '').replace('>', '') ||
+                userAnswer.includes('5') && userAnswer.includes('5') && currentRoomIndex === 2 ||
+                userAnswer.includes('4') && userAnswer.includes('2') && currentRoomIndex === 3;
+  }
+
+  const feedback = document.getElementById('feedback');
+  
+  if (isCorrect) {
+    // Correct answer
+    score += hintUsed ? 50 : 100;
+    document.getElementById('score').textContent = score;
+    
+    feedback.innerHTML = `
+      <div class="feedback correct">
+        <div class="feedback-title">✅ BENAR! Pintu Terbuka!</div>
+        <p>Kamu berhasil memecahkan teka-teki!</p>
+        <div class="solution">
+          <b>Pembahasan:</b><br>
+          ${room.solution.replace(/\n/g, '<br>')}
+        </div>
+        <p style="margin-top: 15px;">+${hintUsed ? 50 : 100} poin ${hintUsed ? '(menggunakan petunjuk)' : ''}</p>
+      </div>
+    `;
+    
+    document.getElementById('door').classList.add('open');
+    input.disabled = true;
+    document.querySelector('.btn-primary').disabled = true;
+    document.getElementById('hintBtn').disabled = true;
+    
+    setTimeout(() => {
+      currentRoomIndex++;
+      if (currentRoomIndex < rooms.length) {
+        loadRoom();
+      } else {
+        showEndScreen(true);
+      }
+    }, 3000);
+    
+  } else {
+    // Wrong answer
+    lives--;
+    document.getElementById('lives').textContent = lives;
+    
+    feedback.innerHTML = `
+      <div class="feedback wrong">
+        <div class="feedback-title">❌ Jawaban Salah!</div>
+        <p>Kode pintu tidak cocok. Nyawa berkurang 1.</p>
+        <div class="solution">
+          <b>Pembahasan:</b><br>
+          ${room.solution.replace(/\n/g, '<br>')}
+        </div>
+        <p style="margin-top: 15px;">❤️ Sisa nyawa: ${lives}</p>
+      </div>
+    `;
+    
+    input.value = '';
+    input.focus();
+    
+    if (lives <= 0) {
+      setTimeout(() => showEndScreen(false), 2000);
+    }
+  }
+}
+
+function showHint() {
+  const room = rooms[currentRoomIndex];
+  const feedback = document.getElementById('feedback');
+  
+  feedback.innerHTML = `
+    <div class="feedback hint">
+      <div class="feedback-title">💡 Petunjuk:</div>
+      <p>${room.hint.replace(/\n/g, '<br>')}</p>
+      <p style="margin-top: 10px; font-size: 0.9em;">(Jika menggunakan petunjuk, skor berkurang menjadi 50 poin)</p>
+    </div>
+  `;
+  
+  hintUsed = true;
+  document.getElementById('hintBtn').disabled = true;
+}
+
+function showEndScreen(won) {
+  const modal = document.getElementById('endModal');
+  const emoji = document.getElementById('modalEmoji');
+  const title = document.getElementById('modalTitle');
+  const text = document.getElementById('modalText');
+  
+  if (won) {
+    emoji.textContent = '🏆';
+    title.textContent = 'SELAMAT! KAMU BEBAS!';
+    title.className = 'modal-title win';
+    text.innerHTML = `
+      Kamu berhasil menyelesaikan semua ruangan!<br><br>
+      <b>Skor Akhir: ${score}</b><br>
+      Nyawa tersisa: ${lives}<br><br>
+      Kamu adalah master matematika sejati! 🎉
+    `;
+  } else {
+    emoji.textContent = '💀';
+    title.textContent = 'GAME OVER';
+    title.className = 'modal-title lose';
+    text.innerHTML = `
+      Nyawamu habis...<br><br>
+      <b>Skor Akhir: ${score}</b><br>
+      Ruangan terselesaikan: ${currentRoomIndex}/${rooms.length}<br><br>
+      Coba lagi dan buktikan kemampuanmu! 💪
+    `;
+  }
+  
+  modal.classList.add('show');
+}
+
+function restartGame() {
+  currentRoomIndex = 0;
+  lives = 3;
+  score = 0;
+  hintUsed = false;
+  
+  document.getElementById('lives').textContent = lives;
+  document.getElementById('score').textContent = score;
+  document.getElementById('endModal').classList.remove('show');
+  
+  loadRoom();
+}
+
+// Initialize
+createParticles();
+</script>
+
+</body>
+</html>
