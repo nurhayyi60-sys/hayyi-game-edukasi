@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Mission: Save the Earth 🚀</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+  
+  body {
+    background: radial-gradient(ellipse at bottom, #0d1b3e 0%, #02040a 100%);
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+  
+  /* Bintang animasi */
+  .stars, .stars2, .stars3 {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .stars { background: transparent; }
+  .stars::after {
+    content: '';
+    position: absolute;
+    width: 100%; height: 100%;
+    background-image: 
+      radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+      radial-gradient(1px 1px at 40px 70px, #fff, transparent),
+      radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+      radial-gradient(1px 1px at 160px 120px, #fff, transparent),
+      radial-gradient(2px 2px at 200px 50px, #fff, transparent),
+      radial-gradient(1px 1px at 280px 180px, #fff, transparent),
+      radial-gradient(1px 1px at 350px 90px, #fff, transparent),
+      radial-gradient(2px 2px at 420px 220px, #fff, transparent);
+    background-repeat: repeat;
+    background-size: 500px 300px;
+    animation: moveStars 100s linear infinite;
+  }
+  .stars2::after {
+    content: '';
+    position: absolute;
+    width: 100%; height: 100%;
+    background-image: 
+      radial-gradient(1px 1px at 50px 150px, #aaf, transparent),
+      radial-gradient(1px 1px at 150px 250px, #fff, transparent),
+      radial-gradient(2px 2px at 250px 350px, #aaf, transparent),
+      radial-gradient(1px 1px at 350px 50px, #fff, transparent);
+    background-repeat: repeat;
+    background-size: 400px 400px;
+    animation: moveStars 150s linear infinite;
+  }
+  @keyframes moveStars {
+    from { transform: translateY(0); }
+    to { transform: translateY(-3000px); }
+  }
+  
+  .container {
+    position: relative;
+    z-index: 10;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .screen { display: none; animation: fadeIn 0.6s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Header */
+  .game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(20, 30, 60, 0.7);
+    border: 1px solid rgba(100, 200, 255, 0.3);
+    border-radius: 15px;
+    padding: 15px 25px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+  }
+  .game-title {
+    font-size: 1.4em;
+    background: linear-gradient(90deg, #00d4ff, #ff00ea);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+  }
+  .stats { display: flex; gap: 20px; font-size: 0.95em; }
+  .stat-item {
+    background: rgba(0, 212, 255, 0.15);
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 212, 255, 0.4);
+  }
+  
+  /* Intro Screen */
+  .intro {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .intro h1 {
+    font-size: 3em;
+    background: linear-gradient(90deg, #00d4ff, #ff00ea, #ffaa00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  @keyframes glow {
+    from { filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5)); }
+    to { filter: drop-shadow(0 0 25px rgba(255, 0, 234, 0.8)); }
+  }
+  .intro .subtitle {
+    font-size: 1.2em;
+    color: #a0c4ff;
+    margin-bottom: 30px;
+  }
+  .astronaut {
+    font-size: 8em;
+    animation: float 3s ease-in-out infinite;
+    margin: 30px 0;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+  }
+  .story {
+    background: rgba(20, 30, 60, 0.6);
+    border-left: 4px solid #00d4ff;
+    padding: 20px 25px;
+    margin: 30px auto;
+    max-width: 700px;
+    text-align: left;
+    border-radius: 10px;
+    line-height: 1.7;
+  }
+  .story p { margin-bottom: 10px; }
+  
+  .btn {
+    background: linear-gradient(135deg, #00d4ff, #0077ff);
+    color: white;
+    border: none;
+    padding: 14px 35px;
+    font-size: 1.1em;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+    margin: 5px;
+  }
+  .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.6);
+  }
+  .btn-secondary {
+    background: linear-gradient(135deg, #ff00ea, #7700ff);
+    box-shadow: 0 5px 20px rgba(255, 0, 234, 0.4);
+  }
+  .btn-warning {
+    background: linear-gradient(135deg, #ffaa00, #ff5500);
+    box-shadow: 0 5px 20px rgba(255, 170, 0, 0.4);
+  }
+  .btn-small {
+    padding: 8px 18px;
+    font-size: 0.9em;
+  }
+  
+  /* Galaxy Map */
+  .galaxy-title {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 30px;
+    color: #00d4ff;
+  }
+  .planet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+  }
+  .planet-card {
+    background: rgba(20, 30, 60, 0.6);
+    border: 2px solid rgba(100, 200, 255, 0.3);
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+  .planet-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    border-color: #00d4ff;
+    box-shadow: 0 15px 40px rgba(0, 212, 255, 0.4);
+  }
+  .planet-card.completed {
+    border-color: #00ff88;
+    background: rgba(0, 255, 136, 0.1);
+  }
+  .planet-card.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .planet-icon {
+    font-size: 5em;
+    margin-bottom: 15px;
+    animation: planetSpin 20s linear infinite;
+    display: inline-block;
+  }
+  @keyframes planetSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .planet-name {
+    font-size: 1.4em;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .planet-topic {
+    color: #00d4ff;
+    font-size: 0.95em;
+    margin-bottom: 10px;
+  }
+  .planet-desc {
+    color: #a0c4ff;
+    font-size: 0.85em;
+    line-height: 1.5;
+  }
+  .status-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #00ff88;
+    color: #000;
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 0.75em;
+    font-weight: bold;
+  }
+  
+  /* Badges Section */
+  .badges-section {
+    background: rgba(20, 30, 60, 0.6);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .badges-section h3 {
+    color: #ffaa00;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  .badges-grid {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5em;
+    background: rgba(50, 60, 90, 0.5);
+    border: 3px solid #555;
+    filter: grayscale(100%);
+    opacity: 0.4;
+    transition: all 0.5s;
+  }
+  .badge.earned {
+    filter: grayscale(0%);
+    opacity: 1;
+    border-color: #ffaa00;
+    box-shadow: 0 0 20px rgba(255, 170, 0, 0.6);
+    animation: badgePulse 2s ease-in-out infinite;
+  }
+  @keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  
+  /* Question Screen */
+  .question-container {
+    background: rgba(20, 30, 60, 0.8);
+    border: 2px solid rgba(100, 200, 255, 0.4);
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .planet-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .planet-header .icon { font-size: 3em; }
+  .planet-header h2 {
+    color: #00d4ff;
+    margin: 10px 0 5px;
+  }
+  .progress-bar {
+    background: rgba(255, 255, 255, 0.1);
+    height: 10px;
+    border-radius: 5px;
+    margin: 15px 0;
+    overflow: hidden;
+  }
+  .progress-fill {
+    background: linear-gradient(90deg, #00d4ff, #ff00ea);
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.5s;
+  }
+  
+  .question-text {
+    font-size: 1.1em;
+    line-height: 1.7;
+    margin: 20px 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    border-left: 4px solid #ffaa00;
+  }
+  .data-box {
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px dashed #00d4ff;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 10px;
+    font-family: 'Courier New', monospace;
+  }
+  
+  .options {
+    display: grid;
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .option {
+    background: rgba(50, 70, 110, 0.6);
+    border: 2px solid rgba(100, 200, 255, 0.3);
+    padding: 15px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: left;
+    color: #fff;
+    font-size: 1em;
+  }
+  .option:hover {
+    background: rgba(0, 212, 255, 0.2);
+    border-color: #00d4ff;
+    transform: translateX(5px);
+  }
+  .option.correct {
+    background: rgba(0, 255, 136, 0.3);
+    border-color: #00ff88;
+  }
+  .option.wrong {
+    background: rgba(255, 50, 50, 0.3);
+    border-color: #ff3232;
+  }
+  .option.disabled { pointer-events: none; }
+  
+  .hint-box {
+    background: rgba(255, 170, 0, 0.15);
+    border-left: 4px solid #ffaa00;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+    display: none;
+    animation: fadeIn 0.4s;
+  }
+  .hint-box.show { display: block; }
+  .hint-box h4 { color: #ffaa00; margin-bottom: 8px; }
+  
+  .explanation-box {
+    background: rgba(0, 255, 136, 0.1);
+    border-left: 4px solid #00ff88;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+    display: none;
+    animation: fadeIn 0.5s;
+  }
+  .explanation-box.show { display: block; }
+  .explanation-box h4 { color: #00ff88; margin-bottom: 10px; }
+  .explanation-box ol { padding-left: 20px; line-height: 1.8; }
+  .explanation-box .formula {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px 12px;
+    border-radius: 5px;
+    margin: 8px 0;
+    font-family: 'Courier New', monospace;
+    color: #ffaa00;
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  
+  /* Result Screen */
+  .result-container {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .result-icon {
+    font-size: 6em;
+    margin: 20px 0;
+    animation: float 2s ease-in-out infinite;
+  }
+  .result-title {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+    background: linear-gradient(90deg, #00ff88, #00d4ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .score-display {
+    font-size: 3em;
+    color: #ffaa00;
+    margin: 20px 0;
+    font-weight: bold;
+  }
+  
+  /* Report */
+  .report-container {
+    background: rgba(20, 30, 60, 0.8);
+    border: 2px solid rgba(100, 200, 255, 0.4);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 20px auto;
+    max-width: 800px;
+  }
+  .report-container h2 {
+    color: #00d4ff;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .report-section {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+  .report-section h3 {
+    color: #ffaa00;
+    margin-bottom: 10px;
+  }
+  .report-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .report-item:last-child { border-bottom: none; }
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    height: 150px;
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+  }
+  .bar {
+    flex: 1;
+    background: linear-gradient(to top, #00d4ff, #ff00ea);
+    border-radius: 5px 5px 0 0;
+    position: relative;
+    min-height: 10px;
+    transition: height 1s ease;
+  }
+  .bar-label {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75em;
+    white-space: nowrap;
+  }
+  .bar-value {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.85em;
+    color: #ffaa00;
+    font-weight: bold;
+  }
+  
+  .feedback-box {
+    background: rgba(0, 255, 136, 0.1);
+    border-left: 4px solid #00ff88;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 8px;
+    line-height: 1.7;
+  }
+  
+  @media (max-width: 600px) {
+    .intro h1 { font-size: 2em; }
+    .astronaut { font-size: 5em; }
+    .game-title { font-size: 1em; }
+    .stats { flex-wrap: wrap; gap: 10px; }
+    .stat-item { font-size: 0.8em; padding: 5px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+<div class="stars2"></div>
+
+<div class="container">
+  <!-- HEADER -->
+  <div class="game-header" id="gameHeader" style="display:none;">
+    <div class="game-title">🚀 Math Mission</div>
+    <div class="stats">
+      <div class="stat-item">⭐ <span id="scoreDisplay">0</span> Poin</div>
+      <div class="stat-item">🏅 <span id="badgeCount">0</span>/3 Lencana</div>
+      <div class="stat-item">🌍 Misi: <span id="missionStatus">Aktif</span></div>
+    </div>
+  </div>
+
+  <!-- INTRO SCREEN -->
+  <div class="screen active" id="introScreen">
+    <div class="intro">
+      <h1>MATH MISSION</h1>
+      <div class="subtitle">✨ Save the Earth ✨</div>
+      <div class="astronaut">👨‍🚀</div>
+      <div class="story">
+        <p><strong>📡 Panggilan Darurat dari Bumi!</strong></p>
+        <p>Tahun 2026, Bumi menghadapi krisis energi dan perubahan iklim ekstrem. Satu-satunya harapan adalah <strong>Koalisi Planet Matematika</strong> — tiga planet yang menyimpan rahasia statistika, peluang, dan trigonometri.</p>
+        <p>Kamu terpilih sebagai <strong>Astronot Matematis</strong>! Jelajahi galaksi, pecahkan tantangan di setiap planet, dan kumpulkan energi matematika untuk menyelamatkan Bumi. 🌍💫</p>
+      </div>
+      <button class="btn" onclick="startGame()">🚀 Mulai Misi</button>
+      <button class="btn btn-secondary" onclick="showHowToPlay()">📖 Cara Bermain</button>
+    </div>
+  </div>
+
+  <!-- HOW TO PLAY -->
+  <div class="screen" id="howToPlayScreen">
+    <div class="question-container">
+      <h2 style="color:#00d4ff; text-align:center;">📖 Cara Bermain</h2>
+      <div class="story" style="margin-top:20px;">
+        <p>🌌 <strong>1. Peta Galaksi:</strong> Jelajahi 3 planet berbeda, masing-masing dengan topik matematika unik.</p>
+        <p>📊 <strong>Planet Statistika:</strong> Analisis data cuaca antariksa (mean, median, modus).</p>
+        <p>🎲 <strong>Planet Peluang:</strong> Hitung probabilitas peluncuran roket berhasil.</p>
+        <p>📐 <strong>Planet Trigonometri:</strong> Hitung jarak menggunakan sudut elevasi & depresiasi.</p>
+        <p>💡 <strong>Petunjuk:</strong> Klik tombol "Petunjuk" jika butuh bantuan.</p>
+        <p>🏅 <strong>Lencana:</strong> Selesaikan setiap planet untuk mendapatkan lencana!</p>
+        <p>📈 <strong>Laporan:</strong> Lihat perkembangan belajarmu di akhir misi.</p>
+      </div>
+      <div style="text-align:center; margin-top:20px;">
+        <button class="btn" onclick="showScreen('introScreen')">← Kembali</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GALAXY MAP -->
+  <div class="screen" id="galaxyScreen">
+    <h2 class="galaxy-title">🌌 Peta Galaksi Matematika</h2>
+    
+    <div class="badges-section">
+      <h3>🏅 Koleksi Lencana</h3>
+      <div class="badges-grid">
+        <div class="badge" id="badge1" title="Lencana Statistika">📊</div>
+        <div class="badge" id="badge2" title="Lencana Peluang">🎲</div>
+        <div class="badge" id="badge3" title="Lencana Trigonometri">📐</div>
+      </div>
+    </div>
+    
+    <div class="planet-grid">
+      <div class="planet-card" onclick="enterPlanet(0)" id="planet0">
+        <div class="status-badge" id="status0" style="display:none;">✓ SELESAI</div>
+        <div class="planet-icon">🪐</div>
+        <div class="planet-name">Planet Statistika</div>
+        <div class="planet-topic">📊 Analisis Data Cuaca</div>
+        <div class="planet-desc">Analisis data suhu planet untuk memprediksi cuaca antariksa!</div>
+      </div>
+      
+      <div class="planet-card" onclick="enterPlanet(1)" id="planet1">
+        <div class="status-badge" id="status1" style="display:none;">✓ SELESAI</div>
+        <div class="planet-icon">🌕</div>
+        <div class="planet-name">Planet Peluang</div>
+        <div class="planet-topic">🎲 Probabilitas Peluncuran</div>
+        <div class="planet-desc">Hitung peluang roket berhasil mencapai orbit!</div>
+      </div>
+      
+      <div class="planet-card" onclick="enterPlanet(2)" id="planet2">
+        <div class="status-badge" id="status2" style="display:none;">✓ SELESAI</div>
+        <div class="planet-icon">🌑</div>
+        <div class="planet-name">Planet Trigonometri</div>
+        <div class="planet-topic">📐 Sudut & Jarak</div>
+        <div class="planet-desc">Tentukan jarak planet menggunakan sudut elevasi!</div>
+      </div>
+    </div>
+    
+    <div style="text-align:center;">
+      <button class="btn btn-warning" onclick="showReport()">📈 Lihat Laporan Perkembangan</button>
+    </div>
+  </div>
+
+  <!-- QUESTION SCREEN -->
+  <div class="screen" id="questionScreen">
+    <div class="question-container">
+      <div class="planet-header">
+        <div class="icon" id="planetIcon">🪐</div>
+        <h2 id="planetTitle">Planet Statistika</h2>
+        <div id="questionCounter">Soal 1 dari 3</div>
+      </div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+      
+      <div class="question-text" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+      
+      <div class="hint-box" id="hintBox">
+        <h4>💡 Petunjuk</h4>
+        <p id="hintText"></p>
+      </div>
+      
+      <div class="explanation-box" id="explanationBox">
+        <h4>📚 Penjelasan Langkah Penyelesaian</h4>
+        <div id="explanationContent"></div>
+      </div>
+      
+      <div class="action-buttons">
+        <button class="btn btn-small btn-warning" onclick="showHint()">💡 Petunjuk</button>
+        <button class="btn btn-small" onclick="nextQuestion()" id="nextBtn" style="display:none;">Lanjut →</button>
+        <button class="btn btn-small btn-secondary" onclick="backToGalaxy()">🗺️ Peta Galaksi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLANET COMPLETE -->
+  <div class="screen" id="completeScreen">
+    <div class="result-container">
+      <div class="result-icon" id="completeIcon">🏆</div>
+      <h1 class="result-title" id="completeTitle">Planet Ditaklukkan!</h1>
+      <p id="completeMessage" style="font-size:1.2em; color:#a0c4ff;"></p>
+      <div class="score-display">+<span id="earnedScore">0</span> Poin</div>
+      <div id="badgeEarned" style="font-size:4em; margin:20px 0;"></div>
+      <button class="btn" onclick="backToGalaxy()">🗺️ Kembali ke Peta Galaksi</button>
+    </div>
+  </div>
+
+  <!-- REPORT -->
+  <div class="screen" id="reportScreen">
+    <div class="report-container">
+      <h2>📈 Laporan Perkembangan Belajar</h2>
+      <p style="text-align:center; color:#a0c4ff; margin-bottom:20px;">Nama Astronot: <strong id="reportName">Astronot Matematis</strong> | Tanggal: <span id="reportDate"></span></p>
+      
+      <div class="report-section">
+        <h3>🎯 Ringkasan Misi</h3>
+        <div class="report-item">
+          <span>Total Poin</span>
+          <strong id="reportTotalScore">0</strong>
+        </div>
+        <div class="report-item">
+          <span>Planet Diselesaikan</span>
+          <strong id="reportPlanetsDone">0/3</strong>
+        </div>
+        <div class="report-item">
+          <span>Jawaban Benar</span>
+          <strong id="reportCorrect">0</strong>
+        </div>
+        <div class="report-item">
+          <span>Total Soal Dijawab</span>
+          <strong id="reportTotal">0</strong>
+        </div>
+        <div class="report-item">
+          <span>Petunjuk Digunakan</span>
+          <strong id="reportHints">0</strong>
+        </div>
+      </div>
+      
+      <div class="report-section">
+        <h3>📊 Performa per Topik</h3>
+        <div class="bar-chart" id="barChart"></div>
+      </div>
+      
+      <div class="report-section">
+        <h3>💬 Umpan Balik Guru</h3>
+        <div class="feedback-box" id="feedbackBox"></div>
+      </div>
+      
+      <div style="text-align:center; margin-top:20px;">
+        <button class="btn" onclick="backToGalaxy()">🗺️ Kembali ke Peta Galaksi</button>
+        <button class="btn btn-secondary" onclick="restartGame()">🔄 Main Lagi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ DATA GAME ============
+const gameData = {
+  planets: [
+    {
+      name: "Planet Statistika",
+      icon: "🪐",
+      topic: "Analisis Data Cuaca Antariksa",
+      badge: "📊",
+      questions: [
+        {
+          text: "📡 Stasiun luar angkasa mencatat suhu permukaan Planet X selama 7 hari berturut-turut (dalam °C): <div class='data-box'>22, 25, 28, 25, 30, 25, 22</div>Untuk memprediksi cuaca minggu depan, astronot perlu mengetahui <strong>rata-rata (mean)</strong> suhu Planet X. Berapakah mean suhu tersebut?",
+          options: ["24 °C", "25 °C", "26 °C", "27 °C"],
+          correct: 1,
+          hint: "Mean = jumlah semua data ÷ banyak data. Jumlahkan semua suhu, lalu bagi dengan 7.",
+          explanation: {
+            steps: [
+              "Jumlahkan semua data suhu: 22 + 25 + 28 + 25 + 30 + 25 + 22 = 177",
+              "Banyak data (n) = 7",
+              "Mean = 177 ÷ 7 = 25,28 ≈ 25 °C"
+            ],
+            formula: "Mean = Σx / n = 177 / 7 = 25 °C"
+          },
+          context: "Rata-rata suhu digunakan untuk memprediksi cuaca dan menentukan pakaian astronot yang tepat saat menjelajah planet."
+        },
+        {
+          text: "🌡️ Dari data suhu Planet X yang sama: <div class='data-box'>22, 25, 28, 25, 30, 25, 22</div>Setelah diurutkan: 22, 22, 25, 25, 25, 28, 30. Berapakah <strong>median</strong> (nilai tengah) dari data tersebut?",
+          options: ["22 °C", "25 °C", "28 °C", "26 °C"],
+          correct: 1,
+          hint: "Urutkan data dari terkecil ke terbesar. Median adalah nilai di tengah. Karena n=7 (ganjil), median = data ke-(n+1)/2 = data ke-4.",
+          explanation: {
+            steps: [
+              "Urutkan data: 22, 22, 25, 25, 25, 28, 30",
+              "Banyak data n = 7 (ganjil)",
+              "Median = data ke-(7+1)/2 = data ke-4",
+              "Data ke-4 = 25"
+            ],
+            formula: "Median = data ke-4 = 25 °C"
+          },
+          context: "Median membantu mengetahui suhu 'typical' Planet X tanpa terpengaruh nilai ekstrem."
+        },
+        {
+          text: "📈 Dari data suhu Planet X, nilai mana yang paling sering muncul? Itulah yang disebut <strong>modus</strong>. Tentukan modus dari data berikut: <div class='data-box'>22, 25, 28, 25, 30, 25, 22</div>",
+          options: ["22 °C", "25 °C", "28 °C", "30 °C"],
+          correct: 1,
+          hint: "Modus = nilai yang paling sering muncul. Hitung frekuensi setiap nilai!",
+          explanation: {
+            steps: [
+              "Hitung frekuensi setiap nilai:",
+              "22 muncul 2 kali",
+              "25 muncul 3 kali ← paling sering",
+              "28 muncul 1 kali",
+              "30 muncul 1 kali",
+              "Jadi modus = 25 °C"
+            ],
+            formula: "Modus = nilai dengan frekuensi tertinggi = 25 °C"
+          },
+          context: "Modus membantu menentukan suhu yang paling umum terjadi di planet tersebut."
+        }
+      ]
+    },
+    {
+      name: "Planet Peluang",
+      icon: "🌕",
+      topic: "Probabilitas Peluncuran Roket",
+      badge: "🎲",
+      questions: [
+        {
+          text: "🚀 Sebuah roket akan diluncurkan ke orbit. Dari 10 kali uji peluncuran sebelumnya, 7 berhasil dan 3 gagal. Berapakah <strong>peluang</strong> roket berhasil diluncurkan pada percobaan berikutnya?",
+          options: ["3/10", "7/10", "1/2", "7/3"],
+          correct: 1,
+          hint: "Peluang = banyak kejadian yang diharapkan ÷ total kejadian. Di sini, kejadian diharapkan = berhasil = 7.",
+          explanation: {
+            steps: [
+              "Banyak kejadian berhasil (n(A)) = 7",
+              "Total kejadian (n(S)) = 10",
+              "Peluang P(A) = n(A) / n(S) = 7/10 = 0,7",
+              "Artinya 70% peluang roket berhasil"
+            ],
+            formula: "P(A) = 7/10 = 0,7 = 70%"
+          },
+          context: "Peluang keberhasilan penting untuk menentukan kelayakan roket sebelum peluncuran sebenarnya."
+        },
+        {
+          text: "🎲 Sistem navigasi roket menggunakan dua dadu untuk menentukan kode peluncuran. Berapakah peluang muncul <strong>jumlah mata dadu = 7</strong> ketika dua dadu dilempar bersamaan?",
+          options: ["1/6", "1/12", "5/36", "7/36"],
+          correct: 0,
+          hint: "Total ruang sampel 2 dadu = 6 × 6 = 36. Cari pasangan yang jumlahnya 7: (1,6), (2,5), (3,4), (4,3), (5,2), (6,1). Ada 6 pasangan.",
+          explanation: {
+            steps: [
+              "Ruang sampel 2 dadu: n(S) = 6 × 6 = 36",
+              "Pasangan dengan jumlah 7: (1,6), (2,5), (3,4), (4,3), (5,2), (6,1)",
+              "Banyak kejadian: n(A) = 6",
+              "P(A) = 6/36 = 1/6"
+            ],
+            formula: "P(jumlah = 7) = 6/36 = 1/6 ≈ 16,67%"
+          },
+          context: "Peluang munculnya jumlah tertentu pada dadu digunakan dalam sistem acak untuk keamanan kode peluncuran."
+        },
+        {
+          text: "👨‍🚀 Dari 6 astronot kandidat, akan dipilih 2 orang untuk misi ke Planet Peluang. Berapa banyak <strong>kombinasi</strong> tim yang mungkin terbentuk?",
+          options: ["12", "15", "30", "36"],
+          correct: 1,
+          hint: "Gunakan rumus kombinasi C(n,r) = n! / (r!(n-r)!). Di sini n=6, r=2. Ingat: kombinasi = urutan TIDAK diperhatikan.",
+          explanation: {
+            steps: [
+              "Diketahui: n = 6, r = 2",
+              "Rumus kombinasi: C(n,r) = n! / (r!(n-r)!)",
+              "C(6,2) = 6! / (2! × 4!) = (6 × 5) / (2 × 1) = 30/2 = 15",
+              "Jadi ada 15 kombinasi tim yang mungkin"
+            ],
+            formula: "C(6,2) = 6! / (2! × 4!) = 15"
+          },
+          context: "Kombinasi digunakan untuk menghitung banyak cara memilih tim tanpa memperhatikan urutan."
+        }
+      ]
+    },
+    {
+      name: "Planet Trigonometri",
+      icon: "🌑",
+      topic: "Sudut Elevasi & Jarak",
+      badge: "📐",
+      questions: [
+        {
+          text: "🛰️ Seorang astronot mengamati puncak gunung di Planet Trigonometri dengan <strong>sudut elevasi 30°</strong>. Jarak horizontal astronot ke puncak gunung adalah <strong>100 meter</strong>. Berapakah tinggi gunung tersebut?<br><small>(gunakan tan 30° = 1/√3 ≈ 0,577)</small>",
+          options: ["50 m", "57,7 m", "100 m", "173,2 m"],
+          correct: 1,
+          hint: "Gunakan tangen: tan(sudut) = depan/samping. Di sini tan 30° = tinggi/100. Maka tinggi = 100 × tan 30°.",
+          explanation: {
+            steps: [
+              "Diketahui: sudut elevasi = 30°, jarak horizontal = 100 m",
+              "Gunakan perbandingan tangen: tan(30°) = tinggi / jarak horizontal",
+              "tan(30°) = tinggi / 100",
+              "tinggi = 100 × tan(30°) = 100 × 0,577 = 57,7 m"
+            ],
+            formula: "tinggi = 100 × tan(30°) = 57,7 m"
+          },
+          context: "Trigonometri digunakan untuk mengukur tinggi benda yang tidak bisa diukur langsung, seperti gunung atau gedung."
+        },
+        {
+          text: "🚁 Sebuah pesawat pengamat terbang pada ketinggian <strong>200 meter</strong>. Pilot mengamati sebuah wahana antariksa di tanah dengan <strong>sudut depresi 45°</strong>. Berapakah <strong>jarak horizontal</strong> pesawat ke wahana tersebut?<br><small>(gunakan tan 45° = 1)</small>",
+          options: ["100 m", "141,4 m", "200 m", "282,8 m"],
+          correct: 2,
+          hint: "Sudut depresi = sudut elevasi dari objek ke pesawat. Gunakan tan 45° = tinggi/jarak. Maka jarak = tinggi/tan 45°.",
+          explanation: {
+            steps: [
+              "Diketahui: ketinggian = 200 m, sudut depresi = 45°",
+              "Sudut depresi = sudut elevasi dari objek = 45°",
+              "tan(45°) = tinggi / jarak horizontal",
+              "1 = 200 / jarak",
+              "jarak = 200 / 1 = 200 m"
+            ],
+            formula: "jarak = 200 / tan(45°) = 200 m"
+          },
+          context: "Sudut depresi digunakan pilot untuk menghitung jarak ke objek di bawahnya."
+        },
+        {
+          text: "🌙 Dua planet A dan B diamati dari stasiun luar angkasa. Jarak stasiun ke planet A = <strong>500 km</strong>, dengan <strong>sudut antara garis ke A dan garis ke B = 60°</strong>. Jika jarak A-B membentuk segitiga siku-siku di A, berapakah <strong>jarak A ke B</strong>?<br><small>(gunakan sin 60° = √3/2 ≈ 0,866)</small>",
+          options: ["250 km", "433 km", "500 km", "866 km"],
+          correct: 1,
+          hint: "Dalam segitiga siku-siku di A, sudut 60° di stasiun. Gunakan sin 60° = depan/miring = AB/500. Maka AB = 500 × sin 60°.",
+          explanation: {
+            steps: [
+              "Diketahui: sisi miring (stasiun ke A) = 500 km, sudut = 60°",
+              "Segitiga siku-siku di A",
+              "Gunakan sin: sin(60°) = sisi depan / sisi miring = AB / 500",
+              "AB = 500 × sin(60°) = 500 × 0,866 = 433 km"
+            ],
+            formula: "AB = 500 × sin(60°) = 433 km"
+          },
+          context: "Trigonometri digunakan astronom untuk menghitung jarak antar benda langit."
+        }
+      ]
+    }
+  ]
+};
+
+// ============ STATE ============
+let state = {
+  score: 0,
+  currentPlanet: 0,
+  currentQuestion: 0,
+  planetsCompleted: [false, false, false],
+  planetScores: [0, 0, 0],
+  planetCorrect: [0, 0, 0],
+  totalCorrect: 0,
+  totalAnswered: 0,
+  hintsUsed: 0,
+  answered: false
+};
+
+// ============ FUNCTIONS ============
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startGame() {
+  document.getElementById('gameHeader').style.display = 'flex';
+  showScreen('galaxyScreen');
+}
+
+function showHowToPlay() {
+  showScreen('howToPlayScreen');
+}
+
+function updateStats() {
+  document.getElementById('scoreDisplay').textContent = state.score;
+  const badgesEarned = state.planetsCompleted.filter(x => x).length;
+  document.getElementById('badgeCount').textContent = badgesEarned;
+  
+  for (let i = 0; i < 3; i++) {
+    const badge = document.getElementById('badge' + (i+1));
+    const status = document.getElementById('status' + i);
+    const card = document.getElementById('planet' + i);
+    if (state.planetsCompleted[i]) {
+      badge.classList.add('earned');
+      status.style.display = 'block';
+      card.classList.add('completed');
+    }
+  }
+}
+
+function enterPlanet(planetIdx) {
+  state.currentPlanet = planetIdx;
+  state.currentQuestion = 0;
+  state.answered = false;
+  
+  const planet = gameData.planets[planetIdx];
+  document.getElementById('planetIcon').textContent = planet.icon;
+  document.getElementById('planetTitle').textContent = planet.name;
+  
+  showScreen('questionScreen');
+  loadQuestion();
+}
+
+function loadQuestion() {
+  const planet = gameData.planets[state.currentPlanet];
+  const q = planet.questions[state.currentQuestion];
+  
+  document.getElementById('questionCounter').textContent = 
+    `Soal ${state.currentQuestion + 1} dari ${planet.questions.length}`;
+  document.getElementById('progressFill').style.width = 
+    ((state.currentQuestion) / planet.questions.length * 100) + '%';
+  
+  document.getElementById('questionText').innerHTML = q.text;
+  
+  const optContainer = document.getElementById('optionsContainer');
+  optContainer.innerHTML = '';
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.textContent = String.fromCharCode(65 + idx) + '. ' + opt;
+    btn.onclick = () => selectAnswer(idx);
+    optContainer.appendChild(btn);
+  });
+  
+  document.getElementById('hintBox').classList.remove('show');
+  document.getElementById('hintText').textContent = q.hint;
+  document.getElementById('explanationBox').classList.remove('show');
+  document.getElementById('nextBtn').style.display = 'none';
+  state.answered = false;
+}
+
+function showHint() {
+  document.getElementById('hintBox').classList.add('show');
+  state.hintsUsed++;
+}
+
+function selectAnswer(idx) {
+  if (state.answered) return;
+  state.answered = true;
+  state.totalAnswered++;
+  
+  const planet = gameData.planets[state.currentPlanet];
+  const q = planet.questions[state.currentPlanet !== undefined ? state.currentQuestion : 0];
+  const currentQ = planet.questions[state.currentQuestion];
+  const options = document.querySelectorAll('.option');
+  
+  options.forEach(o => o.classList.add('disabled'));
+  
+  if (idx === currentQ.correct) {
+    options[idx].classList.add('correct');
+    state.score += 100;
+    state.planetScores[state.currentPlanet] += 100;
+    state.planetCorrect[state.currentPlanet]++;
+    state.totalCorrect++;
+  } else {
+    options[idx].classList.add('wrong');
+    options[currentQ.correct].classList.add('correct');
+  }
+  
+  // Tampilkan penjelasan
+  const expBox = document.getElementById('explanationBox');
+  let expHTML = '<ol>';
+  currentQ.explanation.steps.forEach(step => {
+    expHTML += `<li>${step}</li>`;
+  });
+  expHTML += `</ol>`;
+  expHTML += `<div class="formula">${currentQ.explanation.formula}</div>`;
+  expHTML += `<p style="margin-top:10px;"><strong>🌟 Kontekstual:</strong> ${currentQ.context}</p>`;
+  document.getElementById('explanationContent').innerHTML = expHTML;
+  expBox.classList.add('show');
+  
+  document.getElementById('nextBtn').style.display = 'inline-block';
+  updateStats();
+}
+
+function nextQuestion() {
+  const planet = gameData.planets[state.currentPlanet];
+  state.currentQuestion++;
+  
+  if (state.currentQuestion >= planet.questions.length) {
+    completePlanet();
+  } else {
+    loadQuestion();
+  }
+}
+
+function completePlanet() {
+  state.planetsCompleted[state.currentPlanet] = true;
+  const planet = gameData.planets[state.currentPlanet];
+  
+  document.getElementById('completeIcon').textContent = planet.icon;
+  document.getElementById('completeTitle').textContent = `${planet.name} Ditaklukkan!`;
+  document.getElementById('completeMessage').textContent = 
+    `Kamu berhasil menyelesaikan misi di ${planet.name}. Energi matematika telah dikumpulkan!`;
+  document.getElementById('earnedScore').textContent = state.planetScores[state.currentPlanet];
+  document.getElementById('badgeEarned').textContent = planet.badge;
+  
+  updateStats();
+  showScreen('completeScreen');
+}
+
+function backToGalaxy() {
+  showScreen('galaxyScreen');
+  updateStats();
+}
+
+function showReport() {
+  document.getElementById('reportDate').textContent = new Date().toLocaleDateString('id-ID', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+  
+  document.getElementById('reportTotalScore').textContent = state.score;
+  document.getElementById('reportPlanetsDone').textContent = 
+    state.planetsCompleted.filter(x => x).length + '/3';
+  document.getElementById('reportCorrect').textContent = state.totalCorrect;
+  document.getElementById('reportTotal').textContent = state.totalAnswered;
+  document.getElementById('reportHints').textContent = state.hintsUsed;
+  
+  // Bar chart
+  const chart = document.getElementById('barChart');
+  chart.innerHTML = '';
+  const maxScore = 300;
+  gameData.planets.forEach((p, i) => {
+    const height = (state.planetScores[i] / maxScore) * 100;
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.height = '0%';
+    bar.innerHTML = `
+      <div class="bar-value">${state.planetScores[i]}</div>
+      <div class="bar-label">${p.icon}<br>${p.name.split(' ')[1]}</div>
+    `;
+    chart.appendChild(bar);
+    setTimeout(() => { bar.style.height = Math.max(height, 5) + '%'; }, 100);
+  });
+  
+  // Feedback
+  const percentage = state.totalAnswered > 0 ? (state.totalCorrect / state.totalAnswered) * 100 : 0;
+  let feedback = '';
+  if (percentage >= 80) {
+    feedback = `<strong>🌟 LUAR BIASA!</strong> Kamu adalah Astronot Matematis sejati! Pemahamanmu tentang statistika, peluang, dan trigonometri sangat baik. Pertahankan prestasimu dan terus eksplorasi galaksi matematika! 🚀`;
+  } else if (percentage >= 60) {
+    feedback = `<strong>✨ BAGUS!</strong> Kamu sudah memahami konsep dasar dengan baik. Terus berlatih untuk meningkatkan akurasi, terutama pada soal yang lebih kompleks. Bumi butuh pahlawan sepertimu! 💪`;
+  } else if (percentage >= 40) {
+    feedback = `<strong>💪 SEMANGAT!</strong> Kamu sudah berusaha dengan baik. Coba ulangi misi di planet yang belum tuntas dan pelajari penjelasan setiap soal. Latihan membuat sempurna! 📚`;
+  } else {
+    feedback = `<strong>🌱 JANGAN MENYERAH!</strong> Setiap astronot hebat pernah gagal sebelum sukses. Pelajari penjelasan langkah demi langkah, gunakan petunjuk, dan coba lagi. Bumi menunggumu! 🌍`;
+  }
+  document.getElementById('feedbackBox').innerHTML = feedback;
+  
+  showScreen('reportScreen');
+}
+
+function restartGame() {
+  state = {
+    score: 0,
+    currentPlanet: 0,
+    currentQuestion: 0,
+    planetsCompleted: [false, false, false],
+    planetScores: [0, 0, 0],
+    planetCorrect: [0, 0, 0],
+    totalCorrect: 0,
+    totalAnswered: 0,
+    hintsUsed: 0,
+    answered: false
+  };
+  
+  // Reset visual
+  for (let i = 0; i < 3; i++) {
+    document.getElementById('badge' + (i+1)).classList.remove('earned');
+    document.getElementById('status' + i).style.display = 'none';
+    document.getElementById('planet' + i).classList.remove('completed');
+  }
+  updateStats();
+  showScreen('galaxyScreen');
+}
+
+// Init
+updateStats();
+</script>
+
+</body>
+</html>
