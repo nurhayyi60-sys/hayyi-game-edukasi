@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Tarik Tambang - Persamaan Linear</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+  body {
+    background: linear-gradient(180deg, #87CEEB 0%, #98D8E8 60%, #7CB342 60%, #558B2F 100%);
+    min-height: 100vh;
+    overflow: hidden;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #fff;
+    text-shadow: 3px 3px 0 #d32f2f;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 20px;
+    font-size: 1.1em;
+  }
+  .arena {
+    position: relative;
+    height: 300px;
+    background: linear-gradient(180deg, transparent 0%, #8D6E63 70%, #5D4037 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 4px solid #3E2723;
+    margin-bottom: 20px;
+  }
+  .ground {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 30%;
+    background: repeating-linear-gradient(
+      45deg,
+      #8D6E63,
+      #8D6E63 20px,
+      #795548 20px,
+      #795548 40px
+    );
+  }
+  .center-line {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 100%;
+    background: repeating-linear-gradient(0deg, #fff 0, #fff 10px, transparent 10px, transparent 20px);
+    z-index: 2;
+  }
+  .rope {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 12px;
+    background: repeating-linear-gradient(90deg, #D7CCC8 0, #D7CCC8 15px, #8D6E63 15px, #8D6E63 30px);
+    transform: translateY(-50%);
+    transition: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    z-index: 3;
+  }
+  .flag {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 60px;
+    background: #fff;
+    transform: translate(-50%, -50%);
+    transition: left 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    z-index: 4;
+  }
+  .flag::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 4px;
+    width: 30px;
+    height: 20px;
+    background: #FF5722;
+    clip-path: polygon(0 0, 100% 0, 80% 50%, 100% 100%, 0 100%);
+  }
+  .team {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+    z-index: 5;
+    transition: left 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  }
+  .team-left { left: 5%; }
+  .team-right { right: 5%; }
+  .character {
+    font-size: 4em;
+    animation: pull 0.6s ease-in-out infinite alternate;
+  }
+  .team-right .character { animation: pullRight 0.6s ease-in-out infinite alternate; }
+  @keyframes pull { from { transform: translateX(0); } to { transform: translateX(-10px); } }
+  @keyframes pullRight { from { transform: translateX(0); } to { transform: translateX(10px); } }
+  .team-label {
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+    display: inline-block;
+  }
+  .team-left .team-label { background: #1976D2; }
+  .team-right .team-label { background: #D32F2F; }
+
+  .scoreboard {
+    display: flex;
+    justify-content: space-around;
+    background: rgba(255,255,255,0.95);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  .score-item {
+    text-align: center;
+    flex: 1;
+  }
+  .score-item h3 { color: #555; font-size: 0.9em; }
+  .score-item .value { font-size: 2em; font-weight: bold; color: #D32F2F; }
+  .score-item.siswa .value { color: #1976D2; }
+
+  .question-box {
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    text-align: center;
+  }
+  .question-number {
+    color: #D32F2F;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  .question {
+    font-size: 1.8em;
+    color: #333;
+    margin: 15px 0;
+    font-family: 'Courier New', monospace;
+    background: #FFF9C4;
+    padding: 15px;
+    border-radius: 10px;
+    border: 3px dashed #FBC02D;
+  }
+  .answer-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .answer-area label { font-size: 1.3em; font-weight: bold; }
+  input[type="number"] {
+    font-size: 1.5em;
+    padding: 10px 15px;
+    width: 120px;
+    border: 3px solid #1976D2;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+  }
+  button {
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.2em;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    box-shadow: 0 4px 0 #2E7D32;
+  }
+  button:hover { background: #45a049; transform: translateY(-2px); }
+  button:active { transform: translateY(2px); box-shadow: 0 2px 0 #2E7D32; }
+  button:disabled { background: #999; cursor: not-allowed; box-shadow: none; }
+
+  .feedback {
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .feedback.correct { background: #C8E6C9; color: #2E7D32; }
+  .feedback.wrong { background: #FFCDD2; color: #C62828; }
+  .feedback.info { background: #E3F2FD; color: #1565C0; }
+
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal.show { display: flex; }
+  .modal-content {
+    background: #fff;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 500px;
+    animation: popIn 0.5s;
+  }
+  @keyframes popIn {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+  }
+  .modal-content h2 { font-size: 2.5em; margin-bottom: 20px; }
+  .modal-content.win h2 { color: #2E7D32; }
+  .modal-content.lose h2 { color: #C62828; }
+  .modal-content.draw h2 { color: #F57C00; }
+  .emoji { font-size: 5em; margin: 20px 0; }
+  .progress {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+  }
+  .dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #fff;
+    transition: all 0.3s;
+  }
+  .dot.correct { background: #4CAF50; }
+  .dot.wrong { background: #F44336; }
+  .dot.current { background: #FFC107; transform: scale(1.2); }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🏆 TARIK TAMBANG 🏆</h1>
+  <p class="subtitle">Persamaan Linear | SMK Kelas 10</p>
+
+  <div class="arena">
+    <div class="ground"></div>
+    <div class="center-line"></div>
+    <div class="rope" id="rope"></div>
+    <div class="flag" id="flag"></div>
+    <div class="team team-left" id="teamLeft">
+      <div class="character">🧑‍🎓</div>
+      <div class="team-label">SISWA</div>
+    </div>
+    <div class="team team-right" id="teamRight">
+      <div class="character">🤖</div>
+      <div class="team-label">KOMPUTER</div>
+    </div>
+  </div>
+
+  <div class="scoreboard">
+    <div class="score-item siswa">
+      <h3>🧑‍🎓 Jawaban Benar Siswa</h3>
+      <div class="value" id="scoreSiswa">0</div>
+    </div>
+    <div class="score-item">
+      <h3>🤖 Jawaban Benar Komputer</h3>
+      <div class="value" id="scoreKomputer">0</div>
+    </div>
+    <div class="score-item">
+      <h3>📝 Soal</h3>
+      <div class="value" id="currentQ">1 / 5</div>
+    </div>
+  </div>
+
+  <div class="progress" id="progress"></div>
+
+  <div class="question-box">
+    <div class="question-number" id="qNumber">Soal 1 dari 5</div>
+    <div class="question" id="question">2x + 3 = 11</div>
+    <div class="answer-area">
+      <label>x = </label>
+      <input type="number" id="answer" placeholder="?">
+      <button onclick="checkAnswer()" id="submitBtn">JAWAB</button>
+    </div>
+    <div class="feedback info" id="feedback">Masukkan jawabanmu dan tarik tali!</div>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-content" id="modalContent">
+    <div class="emoji" id="modalEmoji">🏆</div>
+    <h2 id="modalTitle">SELAMAT!</h2>
+    <p id="modalText" style="font-size:1.2em; margin:20px 0;"></p>
+    <button onclick="restartGame()">🔄 MAIN LAGI</button>
+  </div>
+</div>
+
+<script>
+  const questions = [
+    { q: "2x + 3 = 11", answer: 4, hint: "Kurangi 3 dari kedua ruas, lalu bagi 2" },
+    { q: "5x - 7 = 18", answer: 5, hint: "Tambah 7, lalu bagi 5" },
+    { q: "3(x + 2) = 21", answer: 5, hint: "Bagi 3 dulu, lalu kurangi 2" },
+    { q: "4x - 2 = 2x + 10", answer: 6, hint: "Kumpulkan x di kiri, angka di kanan" },
+    { q: "x/2 + 3 = 7", answer: 8, hint: "Kurangi 3, lalu kali 2" }
+  ];
+
+  let currentIndex = 0;
+  let scoreSiswa = 0;
+  let scoreKomputer = 0;
+  let ropePosition = 0; // -5 sampai +5
+
+  function initProgress() {
+    const p = document.getElementById('progress');
+    p.innerHTML = '';
+    for (let i = 0; i < questions.length; i++) {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === 0 ? ' current' : '');
+      d.textContent = i + 1;
+      d.id = 'dot-' + i;
+      p.appendChild(d);
+    }
+  }
+
+  function loadQuestion() {
+    if (currentIndex >= questions.length) {
+      endGame();
+      return;
+    }
+    const q = questions[currentIndex];
+    document.getElementById('qNumber').textContent = `Soal ${currentIndex + 1} dari ${questions.length}`;
+    document.getElementById('question').textContent = q.q;
+    document.getElementById('currentQ').textContent = `${currentIndex + 1} / ${questions.length}`;
+    document.getElementById('answer').value = '';
+    document.getElementById('answer').focus();
+    document.getElementById('feedback').className = 'feedback info';
+    document.getElementById('feedback').textContent = 'Masukkan jawabanmu dan tarik tali!';
+    document.getElementById('submitBtn').disabled = false;
+    
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      if (i === currentIndex) d.classList.add('current');
+      else d.classList.remove('current');
+    });
+  }
+
+  function checkAnswer() {
+    const input = document.getElementById('answer');
+    const userAns = parseFloat(input.value);
+    if (isNaN(userAns)) {
+      document.getElementById('feedback').className = 'feedback wrong';
+      document.getElementById('feedback').textContent = '⚠️ Masukkan angka terlebih dahulu!';
+      return;
+    }
+
+    const q = questions[currentIndex];
+    const correct = userAns === q.answer;
+    const dot = document.getElementById('dot-' + currentIndex);
+    dot.classList.remove('current');
+
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('feedback').className = correct ? 'feedback correct' : 'feedback wrong';
+
+    if (correct) {
+      scoreSiswa++;
+      ropePosition--;
+      dot.classList.add('correct');
+      dot.textContent = '✓';
+      document.getElementById('feedback').innerHTML = `✅ BENAR! Tali bergerak ke arahmu! <br><small>Jawaban: x = ${q.answer}</small>`;
+    } else {
+      scoreKomputer++;
+      ropePosition++;
+      dot.classList.add('wrong');
+      dot.textContent = '✗';
+      document.getElementById('feedback').innerHTML = `❌ SALAH! Tali ditarik komputer! <br><small>Jawaban benar: x = ${q.answer}. ${q.hint}</small>`;
+    }
+
+    document.getElementById('scoreSiswa').textContent = scoreSiswa;
+    document.getElementById('scoreKomputer').textContent = scoreKomputer;
+    updateRope();
+
+    setTimeout(() => {
+      currentIndex++;
+      loadQuestion();
+    }, 2500);
+  }
+
+  function updateRope() {
+    const offset = ropePosition * 8; // %
+    const flag = document.getElementById('flag');
+    const teamLeft = document.getElementById('teamLeft');
+    const teamRight = document.getElementById('teamRight');
+    
+    flag.style.left = `calc(50% + ${offset}%)`;
+    
+    // Karakter bergerak mengikuti tali
+    teamLeft.style.left = `calc(5% + ${offset * 0.5}%)`;
+    teamRight.style.right = `calc(5% - ${offset * 0.5}%)`;
+  }
+
+  function endGame() {
+    const modal = document.getElementById('modal');
+    const content = document.getElementById('modalContent');
+    const emoji = document.getElementById('modalEmoji');
+    const title = document.getElementById('modalTitle');
+    const text = document.getElementById('modalText');
+
+    if (scoreSiswa > scoreKomputer) {
+      content.className = 'modal-content win';
+      emoji.textContent = '🏆';
+      title.textContent = 'SISWA MENANG!';
+      text.innerHTML = `Selamat! Kamu berhasil mengalahkan komputer!<br><br>Skor Akhir: <b>${scoreSiswa} - ${scoreKomputer}</b><br>Kamu menguasai Persamaan Linear! 🎉`;
+    } else if (scoreSiswa < scoreKomputer) {
+      content.className = 'modal-content lose';
+      emoji.textContent = '😢';
+      title.textContent = 'KOMPUTER MENANG!';
+      text.innerHTML = `Yah, kamu kalah dari komputer.<br><br>Skor Akhir: <b>${scoreSiswa} - ${scoreKomputer}</b><br>Ayo belajar lagi persamaan linear! 💪`;
+    } else {
+      content.className = 'modal-content draw';
+      emoji.textContent = '🤝';
+      title.textContent = 'SERI!';
+      text.innerHTML = `Kedua tim sama kuatnya!<br><br>Skor Akhir: <b>${scoreSiswa} - ${scoreKomputer}</b><br>Coba lagi untuk menentukan pemenang!`;
+    }
+    modal.classList.add('show');
+  }
+
+  function restartGame() {
+    currentIndex = 0;
+    scoreSiswa = 0;
+    scoreKomputer = 0;
+    ropePosition = 0;
+    document.getElementById('scoreSiswa').textContent = '0';
+    document.getElementById('scoreKomputer').textContent = '0';
+    document.getElementById('modal').classList.remove('show');
+    document.getElementById('flag').style.left = '50%';
+    document.getElementById('teamLeft').style.left = '5%';
+    document.getElementById('teamRight').style.right = '5%';
+    initProgress();
+    loadQuestion();
+  }
+
+  // Enter key untuk submit
+  document.getElementById('answer').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !document.getElementById('submitBtn').disabled) {
+      checkAnswer();
+    }
+  });
+
+  // Start
+  initProgress();
+  loadQuestion();
+</script>
+</body>
+</html>
